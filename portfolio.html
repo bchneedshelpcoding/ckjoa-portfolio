@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Basic Angana Portfolio</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #7a5435;
+    color: #996439;
+    line-height: 1.6;
+    padding: 20px;
+    max-width: 350px;
+    margin: auto;
+  }
+  /* Container to hold different backgrounds */
+  .slideshow-background {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+  /* Each slide */
+  .slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-position: center center;
+    background-size: cover;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+  }
+  .slide.active {
+    opacity: 1;
+    z-index: 0;
+  }
+
+  /* Content styling */
+  .content {
+    max-width: 350px;
+    margin: auto;
+    padding: 20px;
+    background: rgba(255, 250, 245, 0.85);
+    min-height: 100vh;
+    box-shadow: 0 0 15px rgba(59,47,47,0.3);
+    position: relative;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  header img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #d3a612;
+    margin-bottom: 10px;
+  }
+  header h1 {
+    font-size: 1.8rem;
+    color: #caba70;
+    text-shadow:
+    0 0 5px rgba(199, 118, 13, 0.9),
+    0 0 10px rgba(233, 218, 18, 0.7),
+    0 0 15px rgba(235, 215, 42, 0.5);
+  }
+  header p {
+    color: #caba70;
+    text-shadow:
+    0 0 5px rgba(199, 118, 13, 0.9),
+    0 0 10px rgba(233, 218, 18, 0.7),
+    0 0 15px rgba(235, 215, 42, 0.5);
+    font-size: 1rem;
+    margin-top: 5px;
+  }
+  
+  section {
+    background: white;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  }
+  section h2 {
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #633d1a;
+    padding-bottom: 4px;
+    color: #633d1a;
+  }
+  .projects-list, .skills-list, .note-list {
+    list-style: none;
+  }
+  .note-list li {
+    background: #633d1a;
+    color: #996439;
+    padding: 6px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin: 3px 4px 3px 0;
+    font-size: 0.9rem;
+  }
+  .projects-list li {
+    margin-bottom: 8px;
+  }
+  .projects-list a {
+    color: #633d1a;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .projects-list a:hover {
+    text-decoration: underline;
+  }
+  .skills-list li {
+    background: #633d1a;
+    color: #996439;
+    padding: 6px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin: 3px 4px 3px 0;
+    font-size: 0.9rem;
+  }
+  .contact-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  .contact-list li {
+    margin-bottom: 8px;
+  }
+  .contact-list a {
+    color: #633d1a;
+    text-decoration: none;
+    font-weight: 600;
+    word-break: break-all;
+  }
+  .contact-list a:hover {
+    text-decoration: underline;
+  }
+  footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #caba70;
+    text-shadow:
+    0 0 5px rgba(199, 118, 13, 0.9),
+    0 0 10px rgba(233, 218, 18, 0.7),
+    0 0 15px rgba(235, 215, 42, 0.5);
+    margin-top: 10px;
+    user-select: none;
+  }
+
+  /* Photo Albums Gallery */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .gallery img {
+    width: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.25s ease;
+  }
+  .gallery img:hover {
+    transform: scale(1.05);
+  }
+  video {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(87, 37, 4, 0.2);
+  }
+
+  /* Lightbox Overlay */
+  #lightboxOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(59, 47, 47, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  #lightboxContent {
+    position: relative;
+    max-width: 90vw;
+    max-height: 80vh;
+  }
+  #lightboxContent img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* Lightbox Controls */
+  .lightbox-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #f9f6f2;
+    font-size: 2rem;
+    font-weight: bold;
+    background-color: rgba(167, 116, 110, 0.7);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  .lightbox-control:hover {
+    background-color: #a9746e;
+  }
+  #lightboxPrev {
+    left: -50px;
+  }
+  #lightboxNext {
+    right: -50px;
+  }
+  #lightboxClose {
+    top: -45px;
+    right: 0;
+    position: absolute;
+    font-size: 1.5rem;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 400px) {
+    body {
+      padding: 10px;
+    }
+    header img {
+      width: 100px;
+      height: 100px;
+    }
+    header h1 {
+      font-size: 1.5rem;
+    }
+    section {
+      padding: 12px;
+    }
+  }
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤎</text></svg>">
+
+  <div class="slideshow-background">
+    <div class="slide active" style="background-image: url('https://raw.githubusercontent.com/bchneedshelpcoding/Basic-Portfolio-Final/main/portfoliofinal/assets/modernblue.jpg');"></div>
+    <div class="slide" style="background-image: url('https://raw.githubusercontent.com/bchneedshelpcoding/Basic-Portfolio-Final/main/portfoliofinal/assets/lofiandcatstarrynightcity.jpg');"></div>
+    <div class="slide" style="background-image: url('https://raw.githubusercontent.com/bchneedshelpcoding/Basic-Portfolio-Final/main/portfoliofinal/assets/dm.png');"></div>
+  </div>
+
+<header>
+  <img src="https://raw.githubusercontent.com/bchneedshelpcoding/Basic-Portfolio-Final/main/portfoliofinal/assets/fa59437d-aa41-49a9-b70a-6de624d1abaf.jpg" alt="Profile Picture" />
+  <h1>Chloē Krys Joy Angana</h1>
+  <p>BSIT Student</p>
+</header>
+
+<section>
+  <h2>About Me</h2>
+  <p>Second-Year College, Unofficial Graphics & Design Leader Committee, Chief in Editor of Computer Science Organization.</p>
+</section>
+
+<section>
+    <h2>Note</h2>
+    <p>Hello, I am actually a Digital Artist who just happened to be learning Information Technology in hope of widening my experience and knowledge of other things. I like :</p>
+    <ul class="note-list">
+        <li>Anime & Fiction Media</li>
+        <li>Graphic Designing</li>
+        <li>Arts & Literatures</li>
+        <li>Story Writing</li>
+        <li>Animation</li>
+        <li>Any Rock Genres</li>
+        <li>Less Dilemmas</li>
+      </ul>
+  </section>
+
+<section>
+  <h2>Projects</h2>
+  <ul class="projects-list">
+    <li><a href="https://drive.google.com/drive/folders/1BG4lzi4l6m9w65hBKaz6qYDkoEYBubkK?usp=drive_link" target="_blank" rel="noopener">The Spring Faerie Reference Sheet</a></li>
+    <li><a href="https://drive.google.com/drive/folders/1iRCXvldBXqwcqKIktBmJZDLVTBZ1-xJv?usp=sharing" target="_blank" rel="noopener">First PT Assets</a></li>
+    <li><a href="https://github.com/johndoe/task-manager" target="_blank" rel="noopener">Task Manager</a></li>
+  </ul>
+</section>
+
+<section>
+  <h2>Upgrading Programming Language Skills</h2>
+  <ul class="skills-list">
+    <li>HTML</li>
+    <li>CSS</li>
+    <li>JavaScript</li>
+    <li>Java</li>
+    <li>MySQL</li>
+    <li>PHP</li>
+  </ul>
+</section>
+
+<section>
+  <h2>GAD Project Albums</h2>
+  <div class="gallery">
+    <img src="https://raw.githubusercontent.com/bchneedshelpcoding/Basic-Portfolio-Final/main/portfoliofinal/assets/SS- Angana .png" alt="Nature 1" data-index="0" />
+    <img src="https://raw.githubusercontent.com/bchneedshelpcoding/Basic-Portfolio-Final/main/portfoliofinal/assets/SS- Angana.jpeg" alt="Nature 2" data-index="1" />
+    <img src="https://raw.githubusercontent.com/bchneedshelpcoding/Basic-Portfolio-Final/main/portfoliofinal/assets/SS- Angana.jpg" alt="Nature 3" data-index="2" />
+    <img src="https://raw.githubusercontent.com/bchneedshelpcoding/Basic-Portfolio-Final/main/portfoliofinal/assets/SS-angana.png" alt="Nature 4" data-index="3" />
+    <img src="https://raw.githubusercontent.com/bchneedshelpcoding/Basic-Portfolio-Final/main/portfoliofinal/assets/SS- Angana (1).jpeg" alt="Nature 5" data-index="4" />
+  </div>
+</section>
+
+<section>
+  <h2>My Previous GAD Activities</h2>
+  <video controls>
+    <source src="https://raw.githubusercontent.com/bchneedshelpcoding/Basic-Portfolio-Final/main/portfoliofinal/assets/summer-sorcerer.mp4" type="video/mp4" />
+  </video>
+</section>
+
+<section>
+  <h2>Contact</h2>
+  <ul class="contact-list">
+    <li>Email: <a href="mailto:anganachloe@gmail.com">anganachloe@gmail.com</a></li>
+    <li>Phone: <a href="tel:+639918954133">+63 991 895 4133</a></li>
+    <li>FaceBook: <a href="https://www.facebook.com/profile.php?id=100073739179519" target="_blank" rel="noopener">fb.com/justcheckinhere</a></li>
+    <li>GitHub: <a href="https://github.com/bchneedshelpcoding" target="_blank" rel="noopener">github.com/bchneedshelpcoding</a></li>
+  </ul>
+</section>
+
+<footer>
+  &copy; 2025 CKJOA🤎
+</footer>
+
+<!-- Lightbox -->
+<div id="lightboxOverlay">
+  <div id="lightboxContent">
+    <span id="lightboxClose" class="lightbox-control" title="Close">&#10005;</span>
+    <span id="lightboxPrev" class="lightbox-control" title="Previous">&#10094;</span>
+    <img src="" alt="Expanded View" />
+    <span id="lightboxNext" class="lightbox-control" title="Next">&#10095;</span>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const gallery = document.querySelector('.gallery');
+    const lightboxOverlay = document.getElementById('lightboxOverlay');
+    const lightboxImg = lightboxOverlay.querySelector('img');
+    const closeBtn = document.getElementById('lightboxClose');
+    const prevBtn = document.getElementById('lightboxPrev');
+    const nextBtn = document.getElementById('lightboxNext');
+    const images = Array.from(gallery.querySelectorAll('img'));
+    let currentIndex = 0;
+
+    function openLightbox(index){
+      currentIndex = index;
+      const imgSrc = images[currentIndex].src.replace('w=200', 'w=800');
+      lightboxImg.src = imgSrc;
+      lightboxImg.alt = images[currentIndex].alt;
+      lightboxOverlay.style.display = 'flex';
+    }
+
+    function closeLightbox(){
+      lightboxOverlay.style.display = 'none';
+      lightboxImg.src = '';
+    }
+
+    function showNext(){
+      currentIndex = (currentIndex + 1) % images.length;
+      openLightbox(currentIndex);
+    }
+
+    function showPrev(){
+      currentIndex = (currentIndex -1 + images.length) % images.length;
+      openLightbox(currentIndex);
+    }
+
+    // Click thumbnails
+    images.forEach((img, i) => {
+      img.addEventListener('click', () => openLightbox(i));
+    });
+
+    // Controls
+    closeBtn.addEventListener('click', closeLightbox);
+    nextBtn.addEventListener('click', (e) => { e.stopPropagation(); showNext(); });
+    prevBtn.addEventListener('click', (e) => { e.stopPropagation(); showPrev(); });
+
+    // Close on overlay click outside image
+    lightboxOverlay.addEventListener('click', (e) => {
+      if(e.target === lightboxOverlay) closeLightbox();
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if(lightboxOverlay.style.display === 'flex'){
+        if(e.key === 'Escape') closeLightbox();
+        if(e.key === 'ArrowRight') showNext();
+        if(e.key === 'ArrowLeft') showPrev();
+      }
+    });
+  })();
+
+  const slides = document.querySelectorAll('.slide');
+  let currentIndex = 0;
+  const slideInterval = 5000; // 5 seconds
+
+  function nextSlide() {
+    slides[currentIndex].classList.remove('active');
+    currentIndex = (currentIndex+1) % slides.length;
+    slides[currentIndex].classList.add('active');
+  }
+
+  setInterval(nextSlide, slideInterval);
+</script>
+</body>
+</html>
