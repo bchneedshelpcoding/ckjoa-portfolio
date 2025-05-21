@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "ckjoa-portfolio.html"
+      "destination": "portfolio.html"
     }
   ]
 }
